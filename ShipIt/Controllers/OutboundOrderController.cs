@@ -1,8 +1,8 @@
 ﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
- using Microsoft.AspNetCore.Mvc;
- using ShipIt.Exceptions;
+using Microsoft.AspNetCore.Mvc;
+using ShipIt.Exceptions;
 using ShipIt.Models.ApiModels;
 using ShipIt.Repositories;
 
@@ -23,7 +23,7 @@ namespace ShipIt.Controllers
         }
 
         [HttpPost("")]
-        public void Post([FromBody] OutboundOrderRequestModel request)
+        public OutboundResponse Post([FromBody] OutboundOrderRequestModel request)
         {
             Log.Info(String.Format("Processing outbound order: {0}", request));
 
@@ -43,7 +43,8 @@ namespace ShipIt.Controllers
             var lineItems = new List<StockAlteration>();
             var productIds = new List<int>();
             var errors = new List<string>();
-
+            int CountOfTrucks = 0;
+            double totalWeightOfOrder = 0;
             foreach (var orderLine in request.OrderLines)
             {
                 if (!products.ContainsKey(orderLine.gtin))
@@ -55,8 +56,12 @@ namespace ShipIt.Controllers
                     var product = products[orderLine.gtin];
                     lineItems.Add(new StockAlteration(product.Id, orderLine.quantity));
                     productIds.Add(product.Id);
+                    float totalProductWeight = product.Weight * orderLine.quantity;
+                    totalWeightOfOrder += totalProductWeight;
                 }
             }
+
+            CountOfTrucks = (int) Math.Ceiling(totalWeightOfOrder/2000000);
 
             if (errors.Count > 0)
             {
@@ -68,6 +73,7 @@ namespace ShipIt.Controllers
             var orderLines = request.OrderLines.ToList();
             errors = new List<string>();
 
+            
             for (int i = 0; i < lineItems.Count; i++)
             {
                 var lineItem = lineItems[i];
@@ -86,6 +92,7 @@ namespace ShipIt.Controllers
                         string.Format("Product: {0}, stock held: {1}, stock to remove: {2}", orderLine.gtin, item.held,
                             lineItem.Quantity));
                 }
+
             }
 
             if (errors.Count > 0)
@@ -94,6 +101,7 @@ namespace ShipIt.Controllers
             }
 
             _stockRepository.RemoveStock(request.WarehouseId, lineItems);
+            return new OutboundResponse(CountOfTrucks);
         }
     }
 }
