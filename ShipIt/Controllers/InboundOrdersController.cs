@@ -27,60 +27,6 @@ namespace ShipIt.Controllers
             _productRepository = productRepository;
         }
 
-        // [HttpGet("{warehouseId}")]
-        // public InboundOrderResponse Get([FromRoute] int warehouseId)
-        // {
-        //     Log.Info("orderIn for warehouseId: " + warehouseId);
-
-        //     var operationsManager = new Employee(_employeeRepository.GetOperationsManager(warehouseId));
-
-        //     Log.Debug(String.Format("Found operations manager: {0}", operationsManager));
-
-        //     var allStock = _stockRepository.GetStockByWarehouseId(warehouseId);
-
-        //     Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
-        //     foreach (var stock in allStock)
-        //     {
-        //         Product product = new Product(_productRepository.GetProductById(stock.ProductId));
-        //         if(stock.held < product.LowerThreshold && !product.Discontinued)
-        //         {
-        //             Company company = new Company(_companyRepository.GetCompany(product.Gcp));
-
-        //             var orderQuantity = Math.Max(product.LowerThreshold * 3 - stock.held, product.MinimumOrderQuantity);
-
-        //             if (!orderlinesByCompany.ContainsKey(company))
-        //             {
-        //                 orderlinesByCompany.Add(company, new List<InboundOrderLine>());
-        //             }
-
-        //             orderlinesByCompany[company].Add( 
-        //                 new InboundOrderLine()
-        //                 {
-        //                     gtin = product.Gtin,
-        //                     name = product.Name,
-        //                     quantity = orderQuantity
-        //                 });
-        //         }
-        //     }
-
-        //     Log.Debug(String.Format("Constructed order lines: {0}", orderlinesByCompany));
-
-        //     var orderSegments = orderlinesByCompany.Select(ol => new OrderSegment()
-        //     {
-        //         OrderLines = ol.Value,
-        //         Company = ol.Key
-        //     });
-
-        //     Log.Info("Constructed inbound order");
-
-        //     return new InboundOrderResponse()
-        //     {
-        //         OperationsManager = operationsManager,
-        //         WarehouseId = warehouseId,
-        //         OrderSegments = orderSegments
-        //     };
-        // }
-
         [HttpGet("{warehouseId}")]
         public InboundOrderResponse Get([FromRoute] int warehouseId)
         {
@@ -90,17 +36,16 @@ namespace ShipIt.Controllers
 
             Log.Debug(String.Format("Found operations manager: {0}", operationsManager));
 
-            var allStock = _stockRepository.GetStockByWarehouseId(warehouseId);
+            var allStock = _stockRepository.GetStockProductCompanyByWarehouseId(warehouseId);
 
             Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
             foreach (var stock in allStock)
-            {
-                Product product = new Product(_productRepository.GetProductById(stock.ProductId));
-                if(stock.held < product.LowerThreshold && !product.Discontinued)
+            {            
+                if(stock.held < stock.LowerThreshold && stock.Discontinued !=0)
                 {
-                    Company company = new Company(_companyRepository.GetCompany(product.Gcp));
+                    Company company = new Company(stock);
 
-                    var orderQuantity = Math.Max(product.LowerThreshold * 3 - stock.held, product.MinimumOrderQuantity);
+                    var orderQuantity = Math.Max(stock.LowerThreshold * 3 - stock.held, stock.MinimumOrderQuantity);
 
                     if (!orderlinesByCompany.ContainsKey(company))
                     {
@@ -110,8 +55,8 @@ namespace ShipIt.Controllers
                     orderlinesByCompany[company].Add( 
                         new InboundOrderLine()
                         {
-                            gtin = product.Gtin,
-                            name = product.Name,
+                            gtin = stock.Gtin,
+                            name = stock.ProductName,
                             quantity = orderQuantity
                         });
                 }
