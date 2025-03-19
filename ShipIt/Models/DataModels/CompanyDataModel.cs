@@ -6,7 +6,6 @@ namespace ShipIt.Models.DataModels
 {
     public class CompanyDataModel : DataModel
     {
-        [Key]
         [DatabaseColumnName("gcp_cd")]
         public string Gcp { get; set; }
         [DatabaseColumnName("gln_nm")]
