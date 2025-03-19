@@ -1,5 +1,4 @@
 ﻿﻿using ShipIt.Models.ApiModels;
-using System.ComponentModel.DataAnnotations;
 using System.Data;
 
 namespace ShipIt.Models.DataModels
