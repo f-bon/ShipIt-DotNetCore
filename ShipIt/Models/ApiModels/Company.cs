@@ -30,19 +30,6 @@ namespace ShipIt.Models.ApiModels
             Mail = dataModel.Mail;
         }
 
-         public Company(StockProductCompanyModel dataModel)
-        {
-            Gcp = dataModel.Gcp;
-            Name = dataModel.CompanyName;
-            Addr2 = dataModel.Addr2;
-            Addr3 = dataModel.Addr3;
-            Addr4 = dataModel.Addr4;
-            PostalCode = dataModel.PostalCode;
-            City = dataModel.City;
-            Tel = dataModel.Tel;
-            Mail = dataModel.Mail;
-        }
-
         //Empty constructor needed for Xml serialization
         public Company()
         {

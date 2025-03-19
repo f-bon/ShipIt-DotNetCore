@@ -40,12 +40,12 @@ namespace ShipIt.Controllers
 
             Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
             foreach (var stock in allStock)
-            {            
-                if(stock.held < stock.LowerThreshold && stock.Discontinued !=0)
+            {       
+                if(stock.stockDataModel.held < stock.productDataModel.LowerThreshold && stock.productDataModel.Discontinued !=0)
                 {
-                    Company company = new Company(stock);
+                    Company company = new Company(stock.companyDataModel);
 
-                    var orderQuantity = Math.Max(stock.LowerThreshold * 3 - stock.held, stock.MinimumOrderQuantity);
+                    var orderQuantity = Math.Max(stock.productDataModel.LowerThreshold * 3 - stock.stockDataModel.held, stock.productDataModel.MinimumOrderQuantity);
 
                     if (!orderlinesByCompany.ContainsKey(company))
                     {
@@ -55,8 +55,8 @@ namespace ShipIt.Controllers
                     orderlinesByCompany[company].Add( 
                         new InboundOrderLine()
                         {
-                            gtin = stock.Gtin,
-                            name = stock.ProductName,
+                            gtin = stock.productDataModel.Gtin,
+                            name = stock.productDataModel.Name,
                             quantity = orderQuantity
                         });
                 }
