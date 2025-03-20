@@ -67,7 +67,7 @@ namespace ShipItTest
         public void TestVerifyNumberOfTrucks()
         {
             onSetUp();
-            stockRepository.AddStock(WAREHOUSE_ID, new List<StockAlteration>() { new StockAlteration(productId, 10) });
+            stockRepository.AddStock(WAREHOUSE_ID, new List<StockAlteration>() { new StockAlteration(productId, 8000) });
             var outboundOrder = new OutboundOrderRequestModel()
             {
                 WarehouseId = WAREHOUSE_ID,
@@ -76,16 +76,16 @@ namespace ShipItTest
                     new OrderLine()
                     {
                         gtin = GTIN,
-                        quantity = 5
+                        quantity = 7000
                     }                                     
                 }
             };
 
             var outBoundOrder = outboundOrderController.Post(outboundOrder);
-            Assert.AreEqual(outBoundOrder.CountOfTrucks, 8);
+            Assert.AreEqual(outBoundOrder.CountOfTrucks, 2);
 
             var stock = stockRepository.GetStockByWarehouseAndProductIds(WAREHOUSE_ID, new List<int>() { productId })[productId];
-            Assert.AreEqual(stock.held, 5);
+            Assert.AreEqual(stock.held, 1000);
         }
 
         [Test]
