@@ -1,4 +1,5 @@
 ﻿﻿using ShipIt.Models.DataModels;
+using ShipIt.Models.DataTransferObject;
 using System;
 using System.Text;
 
