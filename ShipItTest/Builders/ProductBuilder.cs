@@ -16,7 +16,7 @@ namespace ShipItTest.Builders
         private float Weight = 300.0f;
         private int LowerThreshold = 322;
         private int Discontinued = 0;
-        private int MinimumOrderQuantity = 108;
+        private int MinimumOrderQuantity = 10000;
 
         public ProductBuilder setId(int id)
         {
