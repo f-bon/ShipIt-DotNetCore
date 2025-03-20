@@ -64,6 +64,31 @@ namespace ShipItTest
         }
 
         [Test]
+        public void TestVerifyNumberOfTrucks()
+        {
+            onSetUp();
+            stockRepository.AddStock(WAREHOUSE_ID, new List<StockAlteration>() { new StockAlteration(productId, 10) });
+            var outboundOrder = new OutboundOrderRequestModel()
+            {
+                WarehouseId = WAREHOUSE_ID,
+                OrderLines = new List<OrderLine>()
+                {
+                    new OrderLine()
+                    {
+                        gtin = GTIN,
+                        quantity = 5
+                    }                                     
+                }
+            };
+
+            var outBoundOrder = outboundOrderController.Post(outboundOrder);
+            Assert.AreEqual(outBoundOrder.CountOfTrucks, 8);
+
+            var stock = stockRepository.GetStockByWarehouseAndProductIds(WAREHOUSE_ID, new List<int>() { productId })[productId];
+            Assert.AreEqual(stock.held, 5);
+        }
+
+        [Test]
         public void TestOutboundOrderInsufficientStock()
         {
             onSetUp();

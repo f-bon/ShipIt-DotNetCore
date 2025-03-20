@@ -41,7 +41,7 @@ namespace ShipIt.Controllers
             Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
             foreach (var stock in allStock)
             {       
-                if(stock.stockDataModel.held < stock.productDataModel.LowerThreshold && stock.productDataModel.Discontinued !=0)
+                if(stock.stockDataModel.held < stock.productDataModel.LowerThreshold && stock.productDataModel.Discontinued == 0)
                 {
                     Company company = new Company(stock.companyDataModel);
 
